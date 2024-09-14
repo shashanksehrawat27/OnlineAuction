@@ -1,5 +1,6 @@
 package org.bidding.service.implementation;
 
+import org.bidding.dto.UserDTO;
 import org.bidding.model.User;
 import org.bidding.repository.UserRepository;
 import org.bidding.service.UserService;
@@ -7,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -15,26 +16,51 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    // Conversion from User to UserDTO
+    private UserDTO convertToDTO(User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
+    }
+
+    // Conversion from UserDTO to User
+    private User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setId(userDTO.getId());
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        return user;
     }
 
     @Override
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public List<UserDTO> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public User save(User user) {
-        return userRepository.save(user);
+    public UserDTO findById(Long id) {
+        return userRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElse(null);
     }
 
     @Override
-    public User update(Long id, User user) {
+    public UserDTO save(UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
+        return convertToDTO(userRepository.save(user));
+    }
+
+    @Override
+    public UserDTO update(Long id, UserDTO userDTO) {
         if (userRepository.existsById(id)) {
+            User user = convertToEntity(userDTO);
             user.setId(id);
-            return userRepository.save(user);
+            return convertToDTO(userRepository.save(user));
         }
         return null;
     }

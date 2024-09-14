@@ -1,13 +1,13 @@
 package org.bidding.service;
 
-import org.bidding.model.Product;
+import org.bidding.dto.ProductDTO;
 
 import java.util.List;
 
 public interface ProductService {
-    List<Product> findAll();
-    Product findById(Long id);
-    Product save(Product product);
-    Product update(Long id, Product product);
+    List<ProductDTO> findAll();
+    ProductDTO findById(Long id);
+    ProductDTO save(ProductDTO productDTO);
+    ProductDTO update(Long id, ProductDTO productDTO);
     boolean delete(Long id);
 }

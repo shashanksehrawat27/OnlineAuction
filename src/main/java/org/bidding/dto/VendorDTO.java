@@ -3,7 +3,7 @@ package org.bidding.dto;
 public class VendorDTO {
     private Long id;
     private String name;
-    private String contactInfo;
+    private String contactInfo; // Added field
 
     // Constructors
     public VendorDTO() {}

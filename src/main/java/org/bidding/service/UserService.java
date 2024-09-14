@@ -1,13 +1,14 @@
 package org.bidding.service;
 
+import org.bidding.dto.UserDTO;
 import org.bidding.model.User;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> findAll();
-    User findById(Long id);
-    User save(User user);
-    User update(Long id, User user);
+    List<UserDTO> findAll();
+    UserDTO findById(Long id);
+    UserDTO save(UserDTO user);
+    UserDTO update(Long id, UserDTO user);
     boolean delete(Long id);
 }

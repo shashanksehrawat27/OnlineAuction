@@ -10,7 +10,9 @@ public class Vendor {
     private Long id;
 
     private String name;
+    @Column(unique = true)
     private String contactInfo;
+
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;

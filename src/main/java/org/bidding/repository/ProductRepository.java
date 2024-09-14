@@ -1,5 +1,6 @@
 package org.bidding.repository;
 
+import org.bidding.dto.ProductDTO;
 import org.bidding.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

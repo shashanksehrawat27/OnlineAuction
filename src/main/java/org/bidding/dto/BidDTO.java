@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 public class BidDTO {
     private Long id;
-    private Long productId; // Reference to the Product
-    private Long userId; // Reference to the User
+    private Long productId;
+    private Long userId;
     private double amount;
     private LocalDateTime bidTime;
 

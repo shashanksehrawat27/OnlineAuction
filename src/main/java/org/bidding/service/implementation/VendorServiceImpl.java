@@ -1,5 +1,6 @@
 package org.bidding.service.implementation;
 
+import org.bidding.exception.CannotCreateDuplicateEntryException;
 import org.bidding.model.Vendor;
 import org.bidding.repository.VendorRepository;
 import org.bidding.service.VendorService;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VendorServiceImpl implements VendorService {
@@ -27,6 +27,10 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public Vendor save(Vendor vendor) {
+
+        if (vendorRepository.existsByContactInfo(vendor.getContactInfo())){
+            throw new CannotCreateDuplicateEntryException("Vendor already exists in DB.");
+        }
         return vendorRepository.save(vendor);
     }
 
