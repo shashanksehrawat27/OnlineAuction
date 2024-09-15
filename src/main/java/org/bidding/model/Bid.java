@@ -18,7 +18,7 @@ public class Bid {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private double amount;
+    private BigDecimal amount;
     private LocalDateTime bidTime;
 
     // Getters and setters
@@ -46,11 +46,11 @@ public class Bid {
         this.user = user;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

@@ -1,6 +1,7 @@
 package org.bidding.service.implementation;
 
 import org.bidding.dto.UserDTO;
+import org.bidding.exception.CannotCreateDuplicateEntryException;
 import org.bidding.model.User;
 import org.bidding.repository.UserRepository;
 import org.bidding.service.UserService;
@@ -51,8 +52,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO save(UserDTO userDTO) {
-        User user = convertToEntity(userDTO);
-        return convertToDTO(userRepository.save(user));
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new CannotCreateDuplicateEntryException("User with email " + userDTO.getEmail() + " already exists.");
+        }
+        return convertToDTO(userRepository.save(convertToEntity(userDTO)));
     }
 
     @Override

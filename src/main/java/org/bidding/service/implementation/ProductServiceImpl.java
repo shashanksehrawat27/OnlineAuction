@@ -1,14 +1,19 @@
 package org.bidding.service.implementation;
 
 import org.bidding.dto.ProductDTO;
+import org.bidding.model.Bid;
 import org.bidding.model.Product;
+import org.bidding.notification.producer.NotificationProducer;
 import org.bidding.repository.ProductRepository;
 import org.bidding.repository.VendorRepository;
+import org.bidding.service.NotificationService;
 import org.bidding.service.ProductService;
 import org.bidding.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.bidding.repository.BidRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +25,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private VendorRepository vendorRepository;
+
+    @Autowired
+    private BidRepository bidRepository;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private NotificationProducer notificationProducer;
+
 
     @Override
     public List<ProductDTO> findAll() {
@@ -64,6 +79,21 @@ public class ProductServiceImpl implements ProductService {
         return false;
     }
 
+    private void endAuctionIfSlotEnded(Product product) {
+        if (LocalDateTime.now().isAfter(product.getEndTime())) {
+            // Handle end of auction logic
+            Bid winningBid = bidRepository.findTopByProductIdOrderByAmountDesc(product.getId());
+
+            if (winningBid != null) {
+                notificationService.sendAuctionEndNotification(product.getId(), winningBid.getUser().getId());
+            } else {
+                notificationService.sendNoBidsNotification(product.getId());
+            }
+
+            String message = "Auction for product ID " + product.getId() + " has ended.";
+            notificationProducer.sendNotification(message);
+        }
+    }
     private ProductDTO convertToDTO(Product product) {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setId(product.getId());

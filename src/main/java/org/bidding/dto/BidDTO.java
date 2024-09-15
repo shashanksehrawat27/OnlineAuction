@@ -1,18 +1,19 @@
 package org.bidding.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class BidDTO {
     private Long id;
     private Long productId;
     private Long userId;
-    private double amount;
+    private BigDecimal amount;
     private LocalDateTime bidTime;
 
     // Constructors
     public BidDTO() {}
 
-    public BidDTO(Long id, Long productId, Long userId, double amount, LocalDateTime bidTime) {
+    public BidDTO(Long id, Long productId, Long userId, BigDecimal amount, LocalDateTime bidTime) {
         this.id = id;
         this.productId = productId;
         this.userId = userId;
@@ -45,11 +46,11 @@ public class BidDTO {
         this.userId = userId;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
