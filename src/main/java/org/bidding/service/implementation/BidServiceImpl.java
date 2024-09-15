@@ -107,11 +107,15 @@ public class BidServiceImpl implements BidService {
 
         Bid savedBid = bidRepository.save(bid);
 
+        // Send bid notification to the user
+        notificationService.sendBidNotification(userId, productId, bidAmount);
+
         // Handle auction end after placing the bid if necessary
         endAuctionIfSlotEnded(product);
 
         return savedBid;
     }
+
     private void endAuctionIfSlotEnded(Product product) {
         if (LocalDateTime.now().isAfter(product.getEndTime())) {
             // Handle end of auction logic

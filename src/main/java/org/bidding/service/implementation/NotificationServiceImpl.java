@@ -1,6 +1,8 @@
 package org.bidding.service.implementation;
 
 import org.bidding.service.NotificationService;
+import org.bidding.notification.producer.NotificationProducer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -8,18 +10,24 @@ import java.math.BigDecimal;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
+    @Autowired
+    private NotificationProducer notificationProducer;
+
     @Override
     public void sendBidNotification(Long userId, Long productId, BigDecimal bidAmount) {
-        // Implement the logic to send a bid notification to the user
+        String message = "User " + userId + " has placed a bid of " + bidAmount + " on product " + productId + ".";
+        notificationProducer.sendNotification(message);
     }
 
     @Override
     public void sendAuctionEndNotification(Long productId, Long userId) {
-        // Implement the logic to notify the user that they have won the auction
+        String message = "Auction for product " + productId + " has ended. User " + userId + " has won the auction.";
+        notificationProducer.sendNotification(message);
     }
 
     @Override
     public void sendNoBidsNotification(Long productId) {
-        // Implement the logic to notify that no bids were received
+        String message = "Auction for product " + productId + " has ended with no bids.";
+        notificationProducer.sendNotification(message);
     }
 }
