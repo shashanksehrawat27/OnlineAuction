@@ -1,13 +1,15 @@
 package org.bidding.service;
 
-import org.bidding.model.Vendor;
+import org.bidding.database.entity.ProductEntity;
+import org.bidding.database.entity.VendorEntity;
 
 import java.util.List;
 
 public interface VendorService {
-    List<Vendor> findAll(); // Fetch all vendors
-    Vendor findById(Long id); // Find a vendor by its ID
-    Vendor save(Vendor vendor); // Save a new vendor
-    Vendor update(Long id, Vendor vendor); // Update an existing vendor
-    boolean delete(Long id); // Delete a vendor by its ID
+    List<VendorEntity> findAllRegisteredVendors(); // Fetch all vendors
+    VendorEntity findVendorByVendorId(Long id); // Find a vendor by its ID
+    VendorEntity addVendor(VendorEntity vendor); // Save a new vendor
+    List<ProductEntity> getProductsByVendorId(Long vendorId);
+    VendorEntity updateVendorDetails(Long id, VendorEntity vendor); // Update an existing vendor
+    boolean deleteVendor(Long id); // Delete a vendor by its ID
 }

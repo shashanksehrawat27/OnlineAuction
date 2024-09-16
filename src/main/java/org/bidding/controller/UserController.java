@@ -19,14 +19,14 @@ public class UserController {
     // Get all users
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> users = userService.findAll();
+        List<UserDTO> users = userService.findAllRegisteredUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     // Get a user by ID
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        UserDTO userDTO = userService.findById(id);
+        UserDTO userDTO = userService.findUserByUserId(id);
         if (userDTO == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -36,14 +36,14 @@ public class UserController {
     // Create a new user
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        UserDTO savedUserDTO = userService.save(userDTO);
+        UserDTO savedUserDTO = userService.addUser(userDTO);
         return new ResponseEntity<>(savedUserDTO, HttpStatus.CREATED);
     }
 
     // Update a user by ID
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = userService.update(id, userDTO);
+        UserDTO updatedUser = userService.updateUserDetail(id, userDTO);
         if (updatedUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -53,7 +53,7 @@ public class UserController {
     // Delete a user by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        boolean deleted = userService.delete(id);
+        boolean deleted = userService.deleteUser(id);
         if (deleted) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

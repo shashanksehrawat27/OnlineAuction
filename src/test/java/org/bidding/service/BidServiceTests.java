@@ -1,14 +1,13 @@
 package org.bidding.service;
 
+import org.bidding.database.entity.BidEntity;
 import org.bidding.service.implementation.BidServiceImpl;
 
-import org.bidding.model.Bid;
-import org.bidding.model.Product;
-import org.bidding.model.User;
-import org.bidding.repository.BidRepository;
-import org.bidding.repository.ProductRepository;
-import org.bidding.repository.UserRepository;
-import org.bidding.service.BidService;
+import org.bidding.database.entity.ProductEntity;
+import org.bidding.database.entity.UserEntity;
+import org.bidding.database.repository.BidRepository;
+import org.bidding.database.repository.ProductRepository;
+import org.bidding.database.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,25 +44,25 @@ class BidServiceTests {
         Long userId = 1L;
         BigDecimal bidAmount = new BigDecimal("100.00");
 
-        Product product = new Product();
+        ProductEntity product = new ProductEntity();
         product.setId(productId);
         product.setBasePrice(new BigDecimal("50.00"));
 
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setId(userId);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        Bid bid = new Bid();
+        BidEntity bid = new BidEntity();
         bid.setProduct(product);
         bid.setUser(user);
         bid.setAmount(bidAmount);
         bid.setBidTime(LocalDateTime.now());
 
-        when(bidRepository.save(any(Bid.class))).thenReturn(bid);
+        when(bidRepository.save(any(BidEntity.class))).thenReturn(bid);
 
-        Bid result = bidService.placeBid(productId, userId, bidAmount);
+        BidEntity result = bidService.placeBid(productId, userId, bidAmount);
 
         assertNotNull(result);
         assertEquals(bidAmount, result.getAmount());
@@ -75,11 +74,11 @@ class BidServiceTests {
         Long userId = 1L;
         BigDecimal bidAmount = new BigDecimal("40.00");
 
-        Product product = new Product();
+        ProductEntity product = new ProductEntity();
         product.setId(productId);
         product.setBasePrice(new BigDecimal("50.00"));
 
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setId(userId);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));

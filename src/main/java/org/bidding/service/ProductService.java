@@ -5,9 +5,10 @@ import org.bidding.dto.ProductDTO;
 import java.util.List;
 
 public interface ProductService {
-    List<ProductDTO> findAll();
-    ProductDTO findById(Long id);
-    ProductDTO save(ProductDTO productDTO);
-    ProductDTO update(Long id, ProductDTO productDTO);
-    boolean delete(Long id);
+    List<ProductDTO> findAllProducts();
+    ProductDTO findProductByProductId(Long id);
+    List<ProductDTO> getProductsByCategory(String category);
+    ProductDTO addProduct(ProductDTO productDTO);
+    ProductDTO updateProductDetail(Long id, ProductDTO productDTO);
+    boolean deleteProduct(Long id);
 }

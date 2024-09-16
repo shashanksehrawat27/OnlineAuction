@@ -1,9 +1,10 @@
 package org.bidding.service.implementation;
 
+import org.bidding.database.mapper.EntityMapper;
 import org.bidding.dto.UserDTO;
 import org.bidding.exception.CannotCreateDuplicateEntryException;
-import org.bidding.model.User;
-import org.bidding.repository.UserRepository;
+import org.bidding.database.entity.UserEntity;
+import org.bidding.database.repository.UserRepository;
 import org.bidding.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,60 +17,56 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    // Conversion from User to UserDTO
-    private UserDTO convertToDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail()
-        );
-    }
-
-    // Conversion from UserDTO to User
-    private User convertToEntity(UserDTO userDTO) {
-        User user = new User();
-        user.setId(userDTO.getId());
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        return user;
-    }
+    @Autowired
+    private EntityMapper entityMapper;
 
     @Override
-    public List<UserDTO> findAll() {
+    public List<UserDTO> findAllRegisteredUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(this::convertToDTO)
+                .map(entityMapper::toUserDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDTO findById(Long id) {
+    public UserDTO findUserByUserId(Long id) {
         return userRepository.findById(id)
-                .map(this::convertToDTO)
+                .map(entityMapper::toUserDTO)
                 .orElse(null);
     }
 
     @Override
-    public UserDTO save(UserDTO userDTO) {
+    public UserDTO addUser(UserDTO userDTO) {
+        if (userDTO == null) {
+            throw new IllegalArgumentException("UserDTO cannot be null");
+        }
+
+        if (userDTO.getEmail() == null || userDTO.getEmail().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new CannotCreateDuplicateEntryException("User with email " + userDTO.getEmail() + " already exists.");
         }
-        return convertToDTO(userRepository.save(convertToEntity(userDTO)));
-    }
 
+        UserEntity userEntity = entityMapper.toUser(userDTO);
+
+        UserEntity savedUserEntity = userRepository.save(userEntity);
+
+        return entityMapper.toUserDTO(savedUserEntity);
+    }
     @Override
-    public UserDTO update(Long id, UserDTO userDTO) {
+    public UserDTO updateUserDetail(Long id, UserDTO userDTO) {
         if (userRepository.existsById(id)) {
-            User user = convertToEntity(userDTO);
+            UserEntity user = entityMapper.toUser(userDTO);
             user.setId(id);
-            return convertToDTO(userRepository.save(user));
+            return entityMapper.toUserDTO(userRepository.save(user));
         }
         return null;
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
             return true;

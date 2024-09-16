@@ -1,20 +1,13 @@
 package org.bidding.service;
 
 
+import org.bidding.database.entity.VendorEntity;
 import org.bidding.exception.CannotCreateDuplicateEntryException;
-import org.bidding.model.Vendor;
-import org.bidding.repository.VendorRepository;
-import org.bidding.service.VendorService;
+import org.bidding.database.repository.VendorRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,25 +22,25 @@ public class VendorServiceTests {
 
     @Test
     public void testSaveVendorWithUniqueContactInfo() {
-        Vendor vendor = new Vendor();
-        vendor.setContactInfo("unique@example.com");
+        VendorEntity vendor = new VendorEntity();
+        vendor.setEmailId("unique@example.com");
 
-        when(vendorRepository.existsByContactInfo("unique@example.com")).thenReturn(false);
+        when(vendorRepository.existsByEmailId("unique@example.com")).thenReturn(false);
         when(vendorRepository.save(vendor)).thenReturn(vendor);
 
-        Vendor savedVendor = vendorService.save(vendor);
+        VendorEntity savedVendor = vendorService.addVendor(vendor);
         assertEquals(vendor, savedVendor);
     }
 
     @Test
     public void testSaveVendorWithDuplicateContactInfo() {
-        Vendor vendor = new Vendor();
-        vendor.setContactInfo("duplicate@example.com");
+        VendorEntity vendor = new VendorEntity();
+        vendor.setEmailId("duplicate@example.com");
 
-        when(vendorRepository.existsByContactInfo("duplicate@example.com")).thenReturn(true);
+        when(vendorRepository.existsByEmailId("duplicate@example.com")).thenReturn(true);
 
         assertThrows(CannotCreateDuplicateEntryException.class, () -> {
-            vendorService.save(vendor);
+            vendorService.addVendor(vendor);
         });
     }
 }
