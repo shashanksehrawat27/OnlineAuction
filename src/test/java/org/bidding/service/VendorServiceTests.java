@@ -1,7 +1,9 @@
 package org.bidding.service;
 
 
+import org.bidding.database.adapter.VendorAdapter;
 import org.bidding.database.entity.VendorEntity;
+import org.bidding.dto.VendorDTO;
 import org.bidding.exception.CannotCreateDuplicateEntryException;
 import org.bidding.database.repository.VendorRepository;
 import org.junit.jupiter.api.Test;
@@ -18,26 +20,26 @@ public class VendorServiceTests {
     private VendorService vendorService;
 
     @MockBean
-    private VendorRepository vendorRepository;
+    private VendorAdapter vendorAdapter;
 
     @Test
     public void testSaveVendorWithUniqueContactInfo() {
-        VendorEntity vendor = new VendorEntity();
+        VendorDTO vendor = new VendorDTO();
         vendor.setEmailId("unique@example.com");
 
-        when(vendorRepository.existsByEmailId("unique@example.com")).thenReturn(false);
-        when(vendorRepository.save(vendor)).thenReturn(vendor);
+        when(vendorAdapter.existsByEmailId("unique@example.com")).thenReturn(false);
+        when(vendorAdapter.save(any())).thenReturn(vendor);
 
-        VendorEntity savedVendor = vendorService.addVendor(vendor);
+        VendorDTO savedVendor = vendorService.addVendor(vendor);
         assertEquals(vendor, savedVendor);
     }
 
     @Test
     public void testSaveVendorWithDuplicateContactInfo() {
-        VendorEntity vendor = new VendorEntity();
+        VendorDTO vendor = new VendorDTO();
         vendor.setEmailId("duplicate@example.com");
 
-        when(vendorRepository.existsByEmailId("duplicate@example.com")).thenReturn(true);
+        when(vendorAdapter.existsByEmailId("duplicate@example.com")).thenReturn(true);
 
         assertThrows(CannotCreateDuplicateEntryException.class, () -> {
             vendorService.addVendor(vendor);

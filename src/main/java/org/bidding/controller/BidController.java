@@ -26,11 +26,8 @@ public class BidController {
     // Get all bids
     @GetMapping
     public ResponseEntity<List<BidDTO>> getAllBids() {
-        List<BidEntity> bids = bidService.findAllBids();
-        List<BidDTO> bidDTOs = bids.stream()
-                .map(entityMapper::toBidDTO)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(bidDTOs, HttpStatus.OK);
+        List<BidDTO> bids = bidService.findAllBids();
+        return new ResponseEntity<>(bids, HttpStatus.OK);
     }
 
     // Place a bid
@@ -39,9 +36,8 @@ public class BidController {
                                            @RequestParam Long userId,
                                            @RequestParam BigDecimal bidAmount) {
         try {
-            BidEntity bid = bidService.placeBid(productId, userId, bidAmount);
-            BidDTO bidDTO = entityMapper.toBidDTO(bid);
-            return new ResponseEntity<>(bidDTO, HttpStatus.CREATED);
+            BidDTO bid = bidService.placeBid(productId, userId, bidAmount);
+            return new ResponseEntity<>(bid, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (ResourceNotFoundException e) {
@@ -54,12 +50,11 @@ public class BidController {
     // Get current highest bid on a product
     @GetMapping("/product/{productId}/highest")
     public ResponseEntity<BidDTO> getCurrentHighestBidForProduct(@PathVariable Long productId) {
-        BidEntity highestBid = bidService.getCurrentHighestBidForProduct(productId);
+        BidDTO highestBid = bidService.getCurrentHighestBidForProduct(productId);
         if (highestBid == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        BidDTO bidDTO = entityMapper.toBidDTO(highestBid);
-        return new ResponseEntity<>(bidDTO, HttpStatus.OK);
+        return new ResponseEntity<>(highestBid, HttpStatus.OK);
     }
 
 }

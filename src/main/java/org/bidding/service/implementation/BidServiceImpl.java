@@ -1,11 +1,11 @@
 package org.bidding.service.implementation;
 
-import org.bidding.database.entity.BidEntity;
+import org.bidding.database.adapter.BidAdapter;
 import org.bidding.database.entity.ProductEntity;
 import org.bidding.database.entity.UserEntity;
+import org.bidding.dto.BidDTO;
 import org.bidding.exception.NoBidsFoundException;
 import org.bidding.notification.producer.NotificationProducer;
-import org.bidding.database.repository.BidRepository;
 import org.bidding.database.repository.ProductRepository;
 import org.bidding.database.repository.UserRepository;
 import org.bidding.service.BidService;
@@ -22,8 +22,6 @@ public class BidServiceImpl implements BidService {
 
     @Autowired
     private NotificationProducer notificationProducer;
-    @Autowired
-    private BidRepository bidRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -34,45 +32,48 @@ public class BidServiceImpl implements BidService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private BidAdapter bidAdapter;
+
     @Override
-    public List<BidEntity> findAllBids() {
-        return bidRepository.findAll();
+    public List<BidDTO> findAllBids() {
+        return bidAdapter.findAll();
     }
 
     @Override
-    public BidEntity findBidsByID(Long id) {
-        return bidRepository.findById(id).orElse(null);
+    public BidDTO findBidsByID(Long id) {
+        return bidAdapter.findById(id);
     }
 
     @Override
-    public BidEntity addBidtoDB(BidEntity bid) {
-        return bidRepository.save(bid);
+    public BidDTO addBidtoDB(BidDTO bid) {
+        return bidAdapter.save(bid);
     }
 
     @Override
-    public BidEntity updateHigherBids(Long id, BidEntity bid) {
-        if (bidRepository.existsById(id)) {
+    public BidDTO updateHigherBids(Long id, BidDTO bid) {
+        if (bidAdapter.existsById(id)) {
             bid.setId(id);
-            return bidRepository.save(bid);
+            return bidAdapter.save(bid);
         }
         return null;
     }
 
     @Override
-    public BidEntity getCurrentHighestBidForProduct(Long productId) {
-        BidEntity highestBid = bidRepository.findTopByProductIdOrderByAmountDesc(productId);
+    public BidDTO getCurrentHighestBidForProduct(Long productId) {
+        BidDTO highestBid = bidAdapter.findTopByProductIdOrderByAmountDesc(productId);
         if (highestBid == null) {
             throw new NoBidsFoundException("No bids found for product ID " + productId);
         }
         return highestBid;
     }
     @Override
-    public List<BidEntity> findByProductId(Long productId) {
-        return bidRepository.findByProductId(productId);
+    public List<BidDTO> findByProductId(Long productId) {
+        return bidAdapter.findByProductId(productId);
     }
 
     @Override
-    public BidEntity placeBid(Long productId, Long userId, BigDecimal bidAmount) {
+    public BidDTO placeBid(Long productId, Long userId, BigDecimal bidAmount) {
         ProductEntity product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
@@ -86,7 +87,7 @@ public class BidServiceImpl implements BidService {
         }
 
         // Get the current highest bid for the product
-        BidEntity highestBid = bidRepository.findTopByProductIdOrderByAmountDesc(productId);
+        BidDTO highestBid = bidAdapter.findTopByProductIdOrderByAmountDesc(productId);
 
         // Ensure the new bid amount is higher than or equal to the current highest bid
         if (highestBid != null && bidAmount.compareTo(highestBid.getAmount()) < 0) {
@@ -99,13 +100,13 @@ public class BidServiceImpl implements BidService {
         }
 
         // Create and save the bid
-        BidEntity bid = new BidEntity();
-        bid.setProduct(product);
-        bid.setUser(user);
+        BidDTO bid = new BidDTO();
+        bid.setProductId(product.getId());
+        bid.setUserId(user.getId());
         bid.setAmount(bidAmount);
         bid.setBidTime(LocalDateTime.now());
 
-        BidEntity savedBid = bidRepository.save(bid);
+        BidDTO savedBid = bidAdapter.save(bid);
 
         // Send bid notification to the user
         notificationService.sendBidNotification(userId, productId, bidAmount);
@@ -119,10 +120,10 @@ public class BidServiceImpl implements BidService {
     private void endAuctionIfSlotEnded(ProductEntity product) {
         if (LocalDateTime.now().isAfter(product.getEndTime())) {
             // Handle end of auction logic
-            BidEntity winningBid = bidRepository.findTopByProductIdOrderByAmountDesc(product.getId());
+            BidDTO winningBid = bidAdapter.findTopByProductIdOrderByAmountDesc(product.getId());
 
             if (winningBid != null) {
-                notificationService.sendAuctionEndNotification(product.getId(), winningBid.getUser().getId());
+                notificationService.sendAuctionEndNotification(product.getId(), winningBid.getUserId());
             } else {
                 notificationService.sendNoBidsNotification(product.getId());
             }
@@ -142,10 +143,10 @@ public class BidServiceImpl implements BidService {
             throw new IllegalStateException("Auction has not ended yet.");
         }
 
-        BidEntity winningBid = bidRepository.findTopByProductIdOrderByAmountDesc(productId);
+        BidDTO winningBid = bidAdapter.findTopByProductIdOrderByAmountDesc(productId);
 
         if (winningBid != null) {
-            notificationService.sendAuctionEndNotification(productId, winningBid.getUser().getId());
+            notificationService.sendAuctionEndNotification(productId, winningBid.getUserId());
         } else {
             notificationService.sendNoBidsNotification(productId);
         }

@@ -49,12 +49,11 @@ public class ProductController {
 
     @GetMapping("/{id}/highest-bid")
     public ResponseEntity<BidDTO> getCurrentHighestBidForProduct(@PathVariable Long id) {
-        BidEntity highestBid = bidService.getCurrentHighestBidForProduct(id);
+        BidDTO highestBid = bidService.getCurrentHighestBidForProduct(id);
         if (highestBid == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        BidDTO bidDTO = entityMapper.toBidDTO(highestBid);
-        return new ResponseEntity<>(bidDTO, HttpStatus.OK);
+        return new ResponseEntity<>(highestBid, HttpStatus.OK);
     }
 
     @PostMapping

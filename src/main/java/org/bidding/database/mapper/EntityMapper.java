@@ -13,16 +13,16 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface EntityMapper {
     @Mapping(target = "name", source = "name")
-    VendorEntity toVendor(VendorDTO vendorDTO);
+    VendorEntity toVendorEntity(VendorDTO vendorDTO);
     VendorDTO toVendorDTO(VendorEntity vendor);
 
-    BidEntity toBid(BidDTO bidDTO);
+    BidEntity toBidEntity(BidDTO bidDTO);
     BidDTO toBidDTO(BidEntity bid);
 
-    UserEntity toUser(UserDTO userDTO);
+    UserEntity toUserEntity(UserDTO userDTO);
     UserDTO toUserDTO(UserEntity userEntity);
 
-    ProductEntity toProduct(ProductDTO productDTO);
+    ProductEntity toProductEntity(ProductDTO productDTO);
     ProductDTO toProductDTO(ProductEntity productEntity);
 
 }
