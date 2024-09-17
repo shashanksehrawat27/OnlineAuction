@@ -1,11 +1,12 @@
 package org.bidding.service;
 
+import org.bidding.database.adapter.BidAdapter;
 import org.bidding.database.entity.BidEntity;
+import org.bidding.dto.BidDTO;
 import org.bidding.service.implementation.BidServiceImpl;
 
 import org.bidding.database.entity.ProductEntity;
 import org.bidding.database.entity.UserEntity;
-import org.bidding.database.repository.BidRepository;
 import org.bidding.database.repository.ProductRepository;
 import org.bidding.database.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -23,9 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class BidServiceTests {
 
     @Mock
-    private BidRepository bidRepository;
-
-    @Mock
     private ProductRepository productRepository;
 
     @Mock
@@ -33,6 +31,9 @@ class BidServiceTests {
 
     @InjectMocks
     private BidServiceImpl bidService;
+
+    @Mock
+    private BidAdapter bidAdapter;
 
     public BidServiceTests() {
         MockitoAnnotations.openMocks(this);
@@ -54,15 +55,15 @@ class BidServiceTests {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        BidEntity bid = new BidEntity();
-        bid.setProduct(product);
-        bid.setUser(user);
+        BidDTO bid = new BidDTO();
+        bid.setProductId(product.getId());
+        bid.setUserId(user.getId());
         bid.setAmount(bidAmount);
         bid.setBidTime(LocalDateTime.now());
 
-        when(bidRepository.save(any(BidEntity.class))).thenReturn(bid);
+        when(bidAdapter.save(any())).thenReturn(bid);
 
-        BidEntity result = bidService.placeBid(productId, userId, bidAmount);
+        BidDTO result = bidService.placeBid(productId, userId, bidAmount);
 
         assertNotNull(result);
         assertEquals(bidAmount, result.getAmount());

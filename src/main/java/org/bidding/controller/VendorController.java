@@ -27,42 +27,33 @@ public class VendorController {
     // Get all vendors
     @GetMapping
     public ResponseEntity<List<VendorDTO>> getAllVendors() {
-        List<VendorEntity> vendors = vendorService.findAllRegisteredVendors();
-        List<VendorDTO> vendorDTOs = vendors.stream()
-                .map(entityMapper::toVendorDTO)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(vendorDTOs, HttpStatus.OK);
+        List<VendorDTO> vendors = vendorService.findAllRegisteredVendors();
+        return new ResponseEntity<>(vendors, HttpStatus.OK);
     }
 
     // Get a vendor by ID
     @GetMapping("/{id}")
     public ResponseEntity<VendorDTO> getVendorById(@PathVariable Long id) {
-        VendorEntity vendor = vendorService.findVendorByVendorId(id);
+        VendorDTO vendor = vendorService.findVendorByVendorId(id);
         if (vendor == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        VendorDTO vendorDTO = entityMapper.toVendorDTO(vendor);
-        return new ResponseEntity<>(vendorDTO, HttpStatus.OK);
+        return new ResponseEntity<>(vendor, HttpStatus.OK);
     }
 
     // Create a new vendor
     @PostMapping
     public ResponseEntity<VendorDTO> createVendor(@RequestBody VendorDTO vendorDTO) {
-        VendorEntity vendor = entityMapper.toVendor(vendorDTO);
-        VendorEntity savedVendor = vendorService.addVendor(vendor);
-        VendorDTO savedVendorDTO = entityMapper.toVendorDTO(savedVendor);
-        return new ResponseEntity<>(savedVendorDTO, HttpStatus.CREATED);
+        VendorDTO savedVendor = vendorService.addVendor(vendorDTO);
+        return new ResponseEntity<>(savedVendor, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}/products")
     public ResponseEntity<List<ProductDTO>> getProductsByVendorId(@PathVariable Long id) {
-        List<ProductEntity> products = vendorService.getProductsByVendorId(id);
+        List<ProductDTO> products = vendorService.getProductsByVendorId(id);
         if (products == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<ProductDTO> productDTOs = products.stream()
-                .map(entityMapper::toProductDTO)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(productDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }

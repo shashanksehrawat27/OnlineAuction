@@ -1,9 +1,10 @@
 package org.bidding.service.implementation;
 
-import org.bidding.database.entity.ProductEntity;
+import org.bidding.database.adapter.VendorAdapter;
 import org.bidding.database.entity.VendorEntity;
+import org.bidding.dto.ProductDTO;
+import org.bidding.dto.VendorDTO;
 import org.bidding.exception.CannotCreateDuplicateEntryException;
-import org.bidding.database.repository.VendorRepository;
 import org.bidding.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,45 +15,45 @@ import java.util.List;
 public class VendorServiceImpl implements VendorService {
 
     @Autowired
-    private VendorRepository vendorRepository;
+    private VendorAdapter vendorAdapter;
 
     @Override
-    public List<VendorEntity> findAllRegisteredVendors() {
-        return vendorRepository.findAll();
+    public List<VendorDTO> findAllRegisteredVendors() {
+        return vendorAdapter.findAll();
     }
 
     @Override
-    public VendorEntity findVendorByVendorId(Long id) {
-        return vendorRepository.findById(id).orElse(null);
+    public VendorDTO findVendorByVendorId(Long id) {
+        return vendorAdapter.findById(id);
     }
 
     @Override
-    public VendorEntity addVendor(VendorEntity vendor) {
+    public VendorDTO addVendor(VendorDTO vendor) {
 
-        if (vendorRepository.existsByEmailId(vendor.getEmailId())){
+        if (vendorAdapter.existsByEmailId(vendor.getEmailId())){
             throw new CannotCreateDuplicateEntryException("Vendor already exists in DB.");
         }
-        return vendorRepository.save(vendor);
+        return vendorAdapter.save(vendor);
     }
 
     @Override
-    public List<ProductEntity> getProductsByVendorId(Long vendorId) {
-        VendorEntity vendor = vendorRepository.findById(vendorId).orElse(null);
+    public List<ProductDTO> getProductsByVendorId(Long vendorId) {
+        VendorDTO vendor = vendorAdapter.findById(vendorId);
         return vendor != null ? vendor.getProducts() : null;
     }
     @Override
-    public VendorEntity updateVendorDetails(Long id, VendorEntity vendor) {
-        if (vendorRepository.existsById(id)) {
+    public VendorDTO updateVendorDetails(Long id, VendorDTO vendor) {
+        if (vendorAdapter.existsById(id)) {
             vendor.setId(id);
-            return vendorRepository.save(vendor);
+            return vendorAdapter.save(vendor);
         }
         return null;
     }
 
     @Override
     public boolean deleteVendor(Long id) {
-        if (vendorRepository.existsById(id)) {
-            vendorRepository.deleteById(id);
+        if (vendorAdapter.existsById(id)) {
+            vendorAdapter.deleteById(id);
             return true;
         }
         return false;
