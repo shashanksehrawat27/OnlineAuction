@@ -1,7 +1,9 @@
-package org.bidding.dto;
+package org.bidding.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bidding.database.entity.ProductEntity;
+import org.bidding.domain.enums.ProductCategoryEnum;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -1,18 +1,18 @@
 package org.bidding.service.implementation;
 
 import org.bidding.database.adapter.BidAdapter;
-import org.bidding.database.entity.ProductEntity;
-import org.bidding.database.entity.UserEntity;
-import org.bidding.dto.BidDTO;
+import org.bidding.database.adapter.ProductAdapter;
+import org.bidding.database.adapter.UserAdapter;
+import org.bidding.domain.dto.BidDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.dto.UserDTO;
 import org.bidding.exception.NoBidsFoundException;
 import org.bidding.notification.producer.NotificationProducer;
-import org.bidding.database.repository.ProductRepository;
-import org.bidding.database.repository.UserRepository;
 import org.bidding.service.BidService;
 import org.bidding.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.bidding.exception.ResourceNotFoundException;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,10 +24,10 @@ public class BidServiceImpl implements BidService {
     private NotificationProducer notificationProducer;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductAdapter productAdapter;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserAdapter userAdapter;
 
     @Autowired
     private NotificationService notificationService;
@@ -73,21 +73,17 @@ public class BidServiceImpl implements BidService {
     }
 
     @Override
-    public BidDTO placeBid(Long productId, Long userId, BigDecimal bidAmount) {
-        ProductEntity product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    public BidDTO placeBid(ProductDTO product, UserDTO user, BigDecimal bidAmount) {
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Ensure the auction is still ongoing
         if (LocalDateTime.now().isAfter(product.getEndTime())) {
-            endAuction(productId);
+            endAuction(product.getId());
             throw new IllegalStateException("The auction for this product has already ended.");
         }
 
         // Get the current highest bid for the product
-        BidDTO highestBid = bidAdapter.findTopByProductIdOrderByAmountDesc(productId);
+        BidDTO highestBid = bidAdapter.findTopByProductIdOrderByAmountDesc(product.getId());
 
         // Ensure the new bid amount is higher than or equal to the current highest bid
         if (highestBid != null && bidAmount.compareTo(highestBid.getAmount()) < 0) {
@@ -101,15 +97,15 @@ public class BidServiceImpl implements BidService {
 
         // Create and save the bid
         BidDTO bid = new BidDTO();
-        bid.setProductId(product.getId());
-        bid.setUserId(user.getId());
+        bid.setProduct(product);
+        bid.setUser(user);
         bid.setAmount(bidAmount);
         bid.setBidTime(LocalDateTime.now());
 
         BidDTO savedBid = bidAdapter.save(bid);
 
         // Send bid notification to the user
-        notificationService.sendBidNotification(userId, productId, bidAmount);
+        notificationService.sendBidNotification(user.getId(), product.getId(), bidAmount);
 
         // Handle auction end after placing the bid if necessary
         endAuctionIfSlotEnded(product);
@@ -117,13 +113,13 @@ public class BidServiceImpl implements BidService {
         return savedBid;
     }
 
-    private void endAuctionIfSlotEnded(ProductEntity product) {
+    private void endAuctionIfSlotEnded(ProductDTO product) {
         if (LocalDateTime.now().isAfter(product.getEndTime())) {
             // Handle end of auction logic
             BidDTO winningBid = bidAdapter.findTopByProductIdOrderByAmountDesc(product.getId());
 
             if (winningBid != null) {
-                notificationService.sendAuctionEndNotification(product.getId(), winningBid.getUserId());
+                notificationService.sendAuctionEndNotification(product.getId(), winningBid.getUser().getId());
             } else {
                 notificationService.sendNoBidsNotification(product.getId());
             }
@@ -136,8 +132,7 @@ public class BidServiceImpl implements BidService {
 
     @Override
     public void endAuction(Long productId) {
-        ProductEntity product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        ProductDTO product = productAdapter.findById(productId);
 
         if (LocalDateTime.now().isBefore(product.getEndTime())) {
             throw new IllegalStateException("Auction has not ended yet.");
@@ -146,13 +141,13 @@ public class BidServiceImpl implements BidService {
         BidDTO winningBid = bidAdapter.findTopByProductIdOrderByAmountDesc(productId);
 
         if (winningBid != null) {
-            notificationService.sendAuctionEndNotification(productId, winningBid.getUserId());
+            notificationService.sendAuctionEndNotification(productId, winningBid.getUser().getId());
         } else {
             notificationService.sendNoBidsNotification(productId);
         }
 
         // Delete the product after auction ends
-        productRepository.delete(product);
+        productAdapter.delete(product);
 
         String message = "Auction for product ID " + productId + " has ended.";
         notificationProducer.sendNotification(message);

@@ -1,14 +1,13 @@
 package org.bidding.service;
 
 import org.bidding.database.adapter.BidAdapter;
-import org.bidding.database.entity.BidEntity;
-import org.bidding.dto.BidDTO;
+import org.bidding.database.adapter.ProductAdapter;
+import org.bidding.database.adapter.UserAdapter;
+import org.bidding.domain.dto.BidDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.dto.UserDTO;
 import org.bidding.service.implementation.BidServiceImpl;
 
-import org.bidding.database.entity.ProductEntity;
-import org.bidding.database.entity.UserEntity;
-import org.bidding.database.repository.ProductRepository;
-import org.bidding.database.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class BidServiceTests {
 
     @Mock
-    private ProductRepository productRepository;
+    private ProductAdapter productAdapter;
 
     @Mock
-    private UserRepository userRepository;
+    private UserAdapter userAdapter;
 
     @InjectMocks
     private BidServiceImpl bidService;
@@ -45,25 +43,25 @@ class BidServiceTests {
         Long userId = 1L;
         BigDecimal bidAmount = new BigDecimal("100.00");
 
-        ProductEntity product = new ProductEntity();
+        ProductDTO product = new ProductDTO();
         product.setId(productId);
         product.setBasePrice(new BigDecimal("50.00"));
 
-        UserEntity user = new UserEntity();
+        UserDTO user = new UserDTO();
         user.setId(userId);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(productAdapter.findById(productId)).thenReturn(product);
+        when(userAdapter.findById(userId)).thenReturn(user);
 
         BidDTO bid = new BidDTO();
-        bid.setProductId(product.getId());
-        bid.setUserId(user.getId());
+        bid.setProduct(product);
+        bid.setUser(user);
         bid.setAmount(bidAmount);
         bid.setBidTime(LocalDateTime.now());
 
         when(bidAdapter.save(any())).thenReturn(bid);
 
-        BidDTO result = bidService.placeBid(productId, userId, bidAmount);
+        BidDTO result = bidService.placeBid(product, user, bidAmount);
 
         assertNotNull(result);
         assertEquals(bidAmount, result.getAmount());
@@ -75,18 +73,18 @@ class BidServiceTests {
         Long userId = 1L;
         BigDecimal bidAmount = new BigDecimal("40.00");
 
-        ProductEntity product = new ProductEntity();
+        ProductDTO product = new ProductDTO();
         product.setId(productId);
         product.setBasePrice(new BigDecimal("50.00"));
 
-        UserEntity user = new UserEntity();
+        UserDTO user = new UserDTO();
         user.setId(userId);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(productAdapter.findById(productId)).thenReturn(product);
+        when(userAdapter.findById(userId)).thenReturn(user);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            bidService.placeBid(productId, userId, bidAmount);
+            bidService.placeBid(product, user, bidAmount);
         });
 
         assertEquals("Bid amount must be greater than or equal to the base price", exception.getMessage());

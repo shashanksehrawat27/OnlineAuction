@@ -1,10 +1,8 @@
 package org.bidding.controller;
 
-import org.bidding.database.entity.ProductEntity;
-import org.bidding.database.entity.VendorEntity;
 import org.bidding.database.mapper.EntityMapper;
-import org.bidding.dto.ProductDTO;
-import org.bidding.dto.VendorDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.dto.VendorDTO;
 import org.bidding.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/vendors")

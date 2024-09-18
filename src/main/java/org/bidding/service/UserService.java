@@ -1,6 +1,6 @@
 package org.bidding.service;
 
-import org.bidding.dto.UserDTO;
+import org.bidding.domain.dto.UserDTO;
 
 import java.util.List;
 

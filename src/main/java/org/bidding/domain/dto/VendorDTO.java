@@ -1,4 +1,4 @@
-package org.bidding.dto;
+package org.bidding.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;

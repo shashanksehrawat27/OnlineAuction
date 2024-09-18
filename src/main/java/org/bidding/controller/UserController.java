@@ -1,6 +1,6 @@
 package org.bidding.controller;
 
-import org.bidding.dto.UserDTO;
+import org.bidding.domain.dto.UserDTO;
 import org.bidding.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

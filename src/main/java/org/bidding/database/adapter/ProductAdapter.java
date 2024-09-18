@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import org.bidding.database.entity.ProductEntity;
 import org.bidding.database.mapper.EntityMapper;
 import org.bidding.database.repository.ProductRepository;
-import org.bidding.dto.ProductDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.enums.ProductCategoryEnum;
 import org.bidding.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,10 @@ public class ProductAdapter {
         return entityMapper.toProductDTO(productRepository.save(productEntity));
     }
 
+    public void delete(ProductDTO productDTO) {
+        ProductEntity productEntity = entityMapper.toProductEntity(productDTO);
+        productRepository.delete(productEntity);
+    }
     public ProductDTO findById(Long id) {
         Optional<ProductEntity> productEntity = productRepository.findById(id);
         return entityMapper.toProductDTO(productEntity.orElseThrow(() -> new ResourceNotFoundException("Product not found")));

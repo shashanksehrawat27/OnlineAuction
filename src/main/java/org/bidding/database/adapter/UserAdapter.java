@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import org.bidding.database.entity.UserEntity;
 import org.bidding.database.mapper.EntityMapper;
 import org.bidding.database.repository.UserRepository;
-import org.bidding.dto.UserDTO;
-import org.bidding.service.UserService;
+import org.bidding.domain.dto.UserDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

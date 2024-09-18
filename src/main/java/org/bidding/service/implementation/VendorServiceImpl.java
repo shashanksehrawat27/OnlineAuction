@@ -1,9 +1,8 @@
 package org.bidding.service.implementation;
 
 import org.bidding.database.adapter.VendorAdapter;
-import org.bidding.database.entity.VendorEntity;
-import org.bidding.dto.ProductDTO;
-import org.bidding.dto.VendorDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.dto.VendorDTO;
 import org.bidding.exception.CannotCreateDuplicateEntryException;
 import org.bidding.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;

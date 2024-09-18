@@ -18,7 +18,8 @@ public class VendorEntity {
     @Column(unique = true)
     private String emailId;
 
-    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(updatable = false)
     private List<ProductEntity> products;
 
 }

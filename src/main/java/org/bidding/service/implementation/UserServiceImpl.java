@@ -1,7 +1,7 @@
 package org.bidding.service.implementation;
 
 import org.bidding.database.adapter.UserAdapter;
-import org.bidding.dto.UserDTO;
+import org.bidding.domain.dto.UserDTO;
 import org.bidding.exception.CannotCreateDuplicateEntryException;
 import org.bidding.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

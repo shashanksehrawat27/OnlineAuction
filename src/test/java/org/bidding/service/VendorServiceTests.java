@@ -2,10 +2,8 @@ package org.bidding.service;
 
 
 import org.bidding.database.adapter.VendorAdapter;
-import org.bidding.database.entity.VendorEntity;
-import org.bidding.dto.VendorDTO;
+import org.bidding.domain.dto.VendorDTO;
 import org.bidding.exception.CannotCreateDuplicateEntryException;
-import org.bidding.database.repository.VendorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;

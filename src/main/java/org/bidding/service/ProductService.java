@@ -1,6 +1,7 @@
 package org.bidding.service;
 
-import org.bidding.dto.ProductDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.enums.ProductCategoryEnum;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.bidding.database.entity.BidEntity;
 import org.bidding.database.mapper.EntityMapper;
 import org.bidding.database.repository.BidRepository;
-import org.bidding.dto.BidDTO;
+import org.bidding.domain.dto.BidDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

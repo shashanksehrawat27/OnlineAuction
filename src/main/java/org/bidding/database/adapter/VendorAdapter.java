@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.bidding.database.entity.VendorEntity;
 import org.bidding.database.mapper.EntityMapper;
 import org.bidding.database.repository.VendorRepository;
-import org.bidding.dto.VendorDTO;
+import org.bidding.domain.dto.VendorDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

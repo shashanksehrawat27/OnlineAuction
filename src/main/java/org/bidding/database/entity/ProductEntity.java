@@ -3,6 +3,7 @@ package org.bidding.database.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.bidding.domain.enums.ProductCategoryEnum;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,10 +17,7 @@ public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "vendor_id", nullable = false)
-    private VendorEntity vendor;
+    private Long vendorId;
 
     private String name;
     private String category;

@@ -1,8 +1,7 @@
 package org.bidding.service;
 
-import org.bidding.database.entity.ProductEntity;
-import org.bidding.dto.ProductDTO;
-import org.bidding.dto.VendorDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.dto.VendorDTO;
 
 import java.util.List;
 

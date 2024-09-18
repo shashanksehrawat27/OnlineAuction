@@ -1,19 +1,18 @@
 package org.bidding.service.implementation;
 
-import jakarta.validation.ConstraintViolationException;
 import org.bidding.database.adapter.BidAdapter;
 import org.bidding.database.adapter.ProductAdapter;
 import org.bidding.database.adapter.VendorAdapter;
-import org.bidding.dto.BidDTO;
-import org.bidding.dto.ProductDTO;
+import org.bidding.domain.dto.BidDTO;
+import org.bidding.domain.dto.ProductDTO;
 import org.bidding.database.entity.ProductEntity;
-import org.bidding.dto.VendorDTO;
+import org.bidding.domain.dto.VendorDTO;
+import org.bidding.domain.enums.ProductCategoryEnum;
 import org.bidding.notification.producer.NotificationProducer;
 import org.bidding.service.NotificationService;
 import org.bidding.service.ProductService;
 import org.bidding.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -59,29 +58,14 @@ public class ProductServiceImpl implements ProductService {
         if(vendor == null) {
             throw new ResourceNotFoundException("Vendor with ID " + productDTO.getVendorId() + " not found");
         }
+//        productDTO.setVendorId(vendor.getId());
 
-        // Set the vendor for the product
-        productDTO.setVendorId(vendor.getId());
+        ProductDTO savedProduct = productAdapter.save(productDTO);
 
-        try {
-            // Save the product
-            ProductDTO savedProduct = productAdapter.save(productDTO);
+        vendor.getProducts().add(savedProduct);
+        vendorAdapter.save(vendor);
 
-            // Add the product to the vendor's product list
-            vendor.getProducts().add(savedProduct);
-            vendorAdapter.save(vendor); // Save the vendor to update the product list
-
-            return savedProduct;
-        } catch (DataIntegrityViolationException e) {
-            // Handle specific database integrity constraint violations
-            throw new RuntimeException("Data integrity violation: " + e.getMessage(), e);
-        } catch (ConstraintViolationException e) {
-            // Handle constraint violations
-            throw new RuntimeException("Constraint violation: " + e.getMessage(), e);
-        } catch (Exception e) {
-            // Handle general exceptions
-            throw new RuntimeException("Error occurred while saving the product: " + e.getMessage(), e);
-        }
+        return savedProduct;
     }
 
     @Override
@@ -104,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
             BidDTO winningBid = bidAdapter.findTopByProductIdOrderByAmountDesc(product.getId());
 
             if (winningBid != null) {
-                notificationService.sendAuctionEndNotification(product.getId(), winningBid.getUserId());
+                notificationService.sendAuctionEndNotification(product.getId(), winningBid.getUser().getId());
             } else {
                 notificationService.sendNoBidsNotification(product.getId());
             }

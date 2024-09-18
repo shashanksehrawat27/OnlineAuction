@@ -2,7 +2,7 @@ package org.bidding.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bidding.service.ProductService;
-import org.bidding.dto.ProductDTO;
+import org.bidding.domain.dto.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

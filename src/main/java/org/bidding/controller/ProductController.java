@@ -1,10 +1,10 @@
 package org.bidding.controller;
 
-import org.bidding.database.entity.BidEntity;
+import jakarta.validation.Valid;
 import org.bidding.database.mapper.EntityMapper;
-import org.bidding.dto.BidDTO;
-import org.bidding.dto.ProductDTO;
-import org.bidding.exception.ResourceNotFoundException;
+import org.bidding.domain.dto.BidDTO;
+import org.bidding.domain.dto.ProductDTO;
+import org.bidding.domain.enums.ProductCategoryEnum;
 import org.bidding.service.BidService;
 import org.bidding.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,24 +57,9 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
-        try {
-            validateProductDTO(productDTO);
-            ProductDTO createdProduct = productService.addProduct(productDTO);
-            return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException ex) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private void validateProductDTO(ProductDTO productDTO) {
-        if (productDTO.getVendorId() == null) {
-            throw new IllegalArgumentException("Vendor ID must not be null");
-        }
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
+        ProductDTO createdProduct = productService.addProduct(productDTO);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

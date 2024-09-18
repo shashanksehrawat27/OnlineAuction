@@ -1,6 +1,7 @@
 package org.bidding.database.repository;
 
 import org.bidding.database.entity.ProductEntity;
+import org.bidding.domain.enums.ProductCategoryEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

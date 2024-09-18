@@ -1,4 +1,4 @@
-package org.bidding.dto;
+package org.bidding.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Setter
 public class BidDTO {
     private Long id;
-    private Long productId;
-    private Long userId;
+    private ProductDTO product;
+    private UserDTO user;
     private BigDecimal amount;
     private LocalDateTime bidTime;
 
     // Constructors
     public BidDTO() {}
 
-    public BidDTO(Long id, Long productId, Long userId, BigDecimal amount, LocalDateTime bidTime) {
+    public BidDTO(Long id, ProductDTO product, UserDTO user, BigDecimal amount, LocalDateTime bidTime) {
         this.id = id;
-        this.productId = productId;
-        this.userId = userId;
+        this.user = user;
+        this.product = product;
         this.amount = amount;
         this.bidTime = bidTime;
     }
